@@ -8,38 +8,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.dc.logoclient.MainActivity" >
 
-    <Button
-        android:id="@+id/buttonQueue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/buttonSend"
-        android:layout_toRightOf="@+id/textView1"
-        android:text="Queue" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editServerAddress"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="14dp"
-        android:text="LOGO Server" />
-
-    <EditText
-        android:id="@+id/editServerAddress"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView2"
-        android:layout_marginTop="28dp"
-        android:ems="10" />
-
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editServerAddress"
-        android:layout_below="@+id/editServerAddress"
         android:layout_marginTop="22dp"
         android:text="@string/logo_command" />
 
@@ -49,7 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView1"
         android:layout_marginTop="21dp"
-        android:layout_toLeftOf="@+id/editServerPort"
         android:ems="10" />
 
     <Button
@@ -61,13 +32,22 @@
         android:layout_marginTop="21dp"
         android:text="@string/send" />
 
-    <EditText
-        android:id="@+id/editServerPort"
+    <Button
+        android:id="@+id/buttonSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/editServerAddress"
-        android:layout_alignBottom="@+id/editServerAddress"
-        android:layout_toRightOf="@+id/editServerAddress"
-        android:ems="10" />
+        android:layout_alignBaseline="@+id/buttonQueue"
+        android:layout_alignBottom="@+id/buttonQueue"
+        android:layout_toRightOf="@+id/buttonQueue"
+        android:text="@string/action_settings" />
+
+    <Button
+        android:id="@+id/buttonQueue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/buttonSend"
+        android:layout_alignBottom="@+id/buttonSend"
+        android:layout_toRightOf="@+id/buttonSend"
+        android:text="Queue" />
 
 </RelativeLayout>

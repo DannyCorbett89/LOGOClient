@@ -7,34 +7,30 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
 public class MainActivity extends ActionBarActivity {
-	private EditText serverAddressField;
-	private EditText serverPortField;
 	private EditText commandField;
 	private Button sendButton;
 	private Button queueButton;
 	private List<String> commands;
-	private String serverAddress;
-	private int serverPort;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		serverAddressField = (EditText) findViewById(R.id.editServerAddress);
-		serverAddressField.setText("192.168.1.30");
-		serverPortField = (EditText) findViewById(R.id.editServerPort);
-		serverPortField.setText("83");
 		commandField = (EditText) findViewById(R.id.editCommand);
 		sendButton = (Button) findViewById(R.id.buttonSend);
 		queueButton = (Button) findViewById(R.id.buttonQueue);
@@ -44,8 +40,6 @@ public class MainActivity extends ActionBarActivity {
 		sendButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				if (!commandField.getText().toString().isEmpty()) {
-					serverAddress = serverAddressField.getText().toString();
-					serverPort = Integer.parseInt(serverPortField.getText().toString());
 					commands.add(commandField.getText().toString());
 
 					commandField.setText("");
@@ -67,6 +61,14 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 
+		Button settings = (Button) findViewById(R.id.buttonSettings);
+		settings.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+				startActivity(i);
+			}
+		});
 	}
 
 	@Override
@@ -82,9 +84,9 @@ public class MainActivity extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
+		// if (id == R.id.action_settings) {
+		// return true;
+		// }
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -93,6 +95,9 @@ public class MainActivity extends ActionBarActivity {
 		@Override
 		protected Void doInBackground(Void... params) {
 			try {
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+				String serverAddress = sharedPref.getString("server_address", "");
+				int serverPort = Integer.parseInt(sharedPref.getString("server_port", ""));
 				Socket socket = new Socket(serverAddress, serverPort);
 				StringBuffer commandsSB = new StringBuffer();
 				StringBuffer response = new StringBuffer();
