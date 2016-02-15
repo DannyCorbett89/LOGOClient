@@ -37,7 +37,7 @@ public class MainActivity extends ActionBarActivity {
 		commands = new ArrayList<String>();
 
 		// Button press event listener
-		sendButton.setOnClickListener(new View.OnClickListener() {
+		sendButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (!commandField.getText().toString().isEmpty()) {
 					commands.add(commandField.getText().toString());
@@ -52,7 +52,7 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 
-		queueButton.setOnClickListener(new View.OnClickListener() {
+		queueButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
 				if (!commandField.getText().toString().isEmpty()) {
 					commands.add(commandField.getText().toString());
@@ -83,7 +83,7 @@ public class MainActivity extends ActionBarActivity {
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
+		// int id = item.getItemId();
 		// if (id == R.id.action_settings) {
 		// return true;
 		// }
@@ -91,7 +91,6 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	private class SendMessage extends AsyncTask<Void, Void, Void> {
-
 		@Override
 		protected Void doInBackground(Void... params) {
 			try {
@@ -107,15 +106,13 @@ public class MainActivity extends ActionBarActivity {
 					commandsSB.append(";");
 				}
 
-				commandsSB.append("x");
-
 				PrintWriter printwriter = new PrintWriter(socket.getOutputStream(), true);
 				printwriter.write(commandsSB.toString() + (char) 13);
 
+				commands.clear();
+
 				printwriter.flush();
 				printwriter.close();
-
-				commands.clear();
 
 				BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
 				InputStreamReader isr = new InputStreamReader(bis);
