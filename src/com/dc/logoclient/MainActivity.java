@@ -1,17 +1,19 @@
 package com.dc.logoclient;
 
-import java.io.BufferedInputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,18 +21,22 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends ActionBarActivity {
+	private TextView connectedDevice;
 	private EditText commandField;
 	private Button sendButton;
 	private Button queueButton;
 	private List<String> commands;
+	private BluetoothDevice device;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		connectedDevice = (TextView) findViewById(R.id.connectedDevice);
 		commandField = (EditText) findViewById(R.id.editCommand);
 		sendButton = (Button) findViewById(R.id.buttonSend);
 		queueButton = (Button) findViewById(R.id.buttonQueue);
@@ -61,14 +67,38 @@ public class MainActivity extends ActionBarActivity {
 			}
 		});
 
-		Button settings = (Button) findViewById(R.id.buttonSettings);
-		settings.setOnClickListener(new OnClickListener() {
+		// Button settings = (Button) findViewById(R.id.buttonSettings);
+		// settings.setOnClickListener(new OnClickListener() {
+		// @Override
+		// public void onClick(View v) {
+		// Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+		// startActivity(i);
+		// }
+		// });
+
+		BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+		btAdapter.cancelDiscovery();
+
+		BroadcastReceiver receiver = new BroadcastReceiver() {
 			@Override
-			public void onClick(View v) {
-				Intent i = new Intent(MainActivity.this, SettingsActivity.class);
-				startActivity(i);
+			public void onReceive(Context context, Intent intent) {
+				String action = intent.getAction();
+
+				if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+					device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+
+					// TODO: Will use the first one it finds. Filter to only use
+					// the raspberry pi
+					// TODO: Achieve this through ping/response? Display a list
+					// to choose from?
+					connectedDevice.setText("Connected to: " + device.getName());
+				}
 			}
-		});
+		};
+
+		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+		registerReceiver(receiver, filter);
+		btAdapter.startDiscovery();
 	}
 
 	@Override
@@ -93,36 +123,35 @@ public class MainActivity extends ActionBarActivity {
 	private class SendMessage extends AsyncTask<Void, Void, Void> {
 		@Override
 		protected Void doInBackground(Void... params) {
+			BluetoothSocket btSocket;
 			try {
-				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-				String serverAddress = sharedPref.getString("server_address", "");
-				int serverPort = Integer.parseInt(sharedPref.getString("server_port", ""));
-				Socket socket = new Socket(serverAddress, serverPort);
-				StringBuffer commandsSB = new StringBuffer();
-				StringBuffer response = new StringBuffer();
+				if (device != null) {
+					// Connect to the remote server through bluetooth
+					UUID uuid = UUID.fromString("04c6032b-0000-4000-8000-00805f9b34fc");
+					btSocket = device.createRfcommSocketToServiceRecord(uuid);
+					btSocket.connect();
 
-				for (String command : commands) {
-					commandsSB.append(command);
-					commandsSB.append(";");
+					// Collect all the commands together into a String
+					StringBuffer commandsSB = new StringBuffer();
+
+					for (String command : commands) {
+						commandsSB.append(command);
+						commandsSB.append(";");
+					}
+
+					commandsSB.append("\n");
+
+					// Send the commands to the remote server
+					OutputStream outStream = btSocket.getOutputStream();
+					byte[] msgBuffer = commandsSB.toString().getBytes();
+					outStream.write(msgBuffer);
+
+					// Clear the list of commands
+					commands.clear();
+
+					// Close the connection
+					btSocket.close();
 				}
-
-				PrintWriter printwriter = new PrintWriter(socket.getOutputStream(), true);
-				printwriter.write(commandsSB.toString() + (char) 13);
-
-				commands.clear();
-
-				printwriter.flush();
-				printwriter.close();
-
-				BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-				InputStreamReader isr = new InputStreamReader(bis);
-				int character;
-
-				while ((character = isr.read()) != 13) {
-					response.append((char) character);
-				}
-
-				socket.close();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

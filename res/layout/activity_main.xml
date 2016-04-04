@@ -8,31 +8,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.dc.logoclient.MainActivity" >
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="22dp"
-        android:text="@string/logo_command" />
-
-    <EditText
-        android:id="@+id/editCommand"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_marginTop="21dp"
-        android:ems="10" />
-
-    <Button
-        android:id="@+id/buttonSend"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editCommand"
-        android:layout_alignRight="@+id/buttonSettings"
-        android:layout_below="@+id/editCommand"
-        android:layout_marginTop="21dp"
-        android:text="@string/send" />
-
     <Button
         android:id="@+id/buttonQueue"
         android:layout_width="wrap_content"
@@ -42,13 +17,49 @@
         android:layout_centerHorizontal="true"
         android:text="Queue" />
 
+    <TextView
+        android:id="@+id/connectedDevice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="22dp"
+        android:text="Not Connected" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/connectedDevice"
+        android:layout_marginTop="16dp"
+        android:text="@string/logo_command" />
+
+    <EditText
+        android:id="@+id/editCommand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="15dp"
+        android:ems="10" />
+
+    <Button
+        android:id="@+id/buttonSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editCommand"
+        android:layout_below="@+id/editCommand"
+        android:layout_marginTop="22dp"
+        android:text="@string/send" />
+
+    <!-- 
     <Button
         android:id="@+id/buttonSettings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/editCommand"
+        android:layout_alignLeft="@+id/buttonSend"
         android:layout_below="@+id/buttonSend"
-        android:layout_toLeftOf="@+id/buttonQueue"
+        android:layout_marginTop="18dp"
         android:text="@string/action_settings" />
-
+    -->
 </RelativeLayout>
